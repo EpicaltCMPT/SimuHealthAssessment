@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import bodyParser from 'body-parser';
 
 //Routes
-import authroutes from "./routes/auth.routes";
+import authroutes from "./routes/auth.schema";
 import todoroutes from "./routes/todo.routes";
 
 //Middleware to validate
