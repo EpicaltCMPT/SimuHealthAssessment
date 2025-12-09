@@ -1,58 +1,61 @@
+import type { z } from "zod";
+import type { todo } from "../models/todo.model";
 import { todoRepo } from "../repo/todo.repo";
-import { todo } from "../models/todo.model";
+import type { filterTodoSchema } from "../schemas/todo.schema";
 
 //Todo service
 class TodoService {
+	//Create a new todo
+	createTodos(ownerId: string, description: string, category?: string) {
+		return todoRepo.createTodo(ownerId, description, category);
+	}
 
-    //Create a new todo
-    createTodos(ownerId: string, description: string, category?: string) {
-        return todoRepo.createTodo(ownerId, description, category);
-    }
+	//Get all todos based on filters
+	getAllTodos(filters: z.infer<typeof filterTodoSchema>): todo[] {
+		const todos = todoRepo.GetAllTodos();
 
-    //Get all todos based on filters
-    getAllTodos(filters: any): todo[] {
-        const todos = todoRepo.GetAllTodos();
+		//Filters todos based on filters
+		return todos.filter((todo) => {
+			//Edge cases: checks if description and category are provided
+			if (
+				filters.description &&
+				!todo.description.includes(filters.description)
+			)
+				return false;
+			if (filters.category && todo.category !== filters.category) return false;
 
-        //Filters todos based on filters
-        return todos.filter((todo) => {
+			//Checks if completed is provided
+			if (filters.completed !== undefined) {
+				//Converts filters.completed to boolean
+				const ifcompleted = filters.completed === "true";
+				if (todo.completed !== ifcompleted) return false;
+			}
 
-            //Edge cases: checks if description and category are provided
-            if (filters.description && !todo.description.includes(filters.description)) return false;
-            if (filters.category && todo.category !== filters.category) return false;
+			return true;
+		});
+	}
 
-            //Checks if completed is provided
-            if (filters.completed !== undefined) {
+	updateTodo(id: string, userId: string, update: Partial<todo>) {
+		//Gets todo by id, if not found, throw error or not the owner
+		const todo = todoRepo.GetTodoByID(id);
+		if (!todo) throw new Error("Todo not found");
+		if (todo.ownerId !== userId)
+			throw new Error("Unauthorized: You are not the owner of this todo");
 
-                //Converts filters.completed to boolean
-                const ifcompleted = filters.completed === "true";
-                if (todo.completed !== ifcompleted) return false;
-            }
+		//Updates todo
+		return todoRepo.updateTodo(id, update);
+	}
 
-            return true;
-        });
-    }
+	deleteTodo(id: string, userId: string) {
+		//Gets todo by id, if not found, throw error or not the owner
+		const todo = todoRepo.GetTodoByID(id);
+		if (!todo) throw new Error("Todo not found");
+		if (todo.ownerId !== userId)
+			throw new Error("Unauthorized: You are not the owner of this todo");
 
-    updateTodo(id: string, userId: string, update: Partial<todo>) {
-
-        //Gets todo by id, if not found, throw error or not the owner
-        const todo = todoRepo.GetTodoByID(id);
-        if (!todo) throw new Error("Todo not found");
-        if (todo.ownerId !== userId) throw new Error("Unauthorized: You are not the owner of this todo");
-
-        //Updates todo
-        return todoRepo.updateTodo(id, update);
-    }
-
-    deleteTodo(id: string, userId: string) {
-
-        //Gets todo by id, if not found, throw error or not the owner
-        const todo = todoRepo.GetTodoByID(id);
-        if (!todo) throw new Error("Todo not found");
-        if (todo.ownerId !== userId) throw new Error("Unauthorized: You are not the owner of this todo");
-
-        //Deletes todo
-        return todoRepo.deleteTodo(id);
-    }
+		//Deletes todo
+		return todoRepo.deleteTodo(id);
+	}
 }
 
 export const todoService = new TodoService();
