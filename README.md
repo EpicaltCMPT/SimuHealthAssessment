@@ -17,12 +17,13 @@ npm install
 
 **Development:**
 ```bash
-npx ts-node src/index.ts
+npm run dev
 ```
 
 **Production:**
 ```bash
-npx tsc && node dist/index.js
+npm run build
+npm run start
 ```
 
 Server runs on port 3000. Optional: Set `JWT_SECRET` environment variable (defaults to "dev_key").
