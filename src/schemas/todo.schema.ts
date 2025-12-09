@@ -15,7 +15,7 @@ export const updateTodoSchema = z.object({
 
 //Filter todo schema
 export const filterTodoSchema = z.object({
-    completed: z.boolean().optional(),
+    completed: z.string().optional(),
     category: z.string().optional(),
     description: z.string().optional(),
 });

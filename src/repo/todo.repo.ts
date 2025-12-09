@@ -6,12 +6,12 @@ class TodoRepo {
     private todos = new Map<string, todo>();
 
     //Create a new todo
-    createTodo(ownerId: string, description: string, category: string): todo {
+    createTodo(ownerId: string, description: string, category?: string): todo {
         const todo: todo = {
             id: uuidv4(),
             ownerId,
             description,
-            category,
+            ...(category !== undefined && { category }),
             completed: false,
             createdAt: new Date(),
             updatedAt: new Date(),

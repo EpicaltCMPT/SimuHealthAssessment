@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { todoService } from "../services/todo.service";
 import { AuthenticatedTodoRequest } from "../middleware/todo.validate";
 
@@ -20,7 +20,7 @@ export const createTodo = async (req: AuthenticatedTodoRequest, res: Response, n
 };
 
 //Get all todos controller to get all todos
-export const getAllTodo = async (req: AuthenticatedTodoRequest, res: Response, next: NextFunction) => {
+export const getAllTodo = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = todoService.getAllTodos(req.query);
         res.json(result);

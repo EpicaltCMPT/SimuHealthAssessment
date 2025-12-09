@@ -5,7 +5,7 @@ import { todo } from "../models/todo.model";
 class TodoService {
 
     //Create a new todo
-    createTodos(ownerId: string, description: string, category: string) {
+    createTodos(ownerId: string, description: string, category?: string) {
         return todoRepo.createTodo(ownerId, description, category);
     }
 
@@ -18,7 +18,7 @@ class TodoService {
 
             //Edge cases: checks if description and category are provided
             if (filters.description && !todo.description.includes(filters.description)) return false;
-            if (filters.category && !todo.category != filters.category) return false;
+            if (filters.category && todo.category !== filters.category) return false;
 
             //Checks if completed is provided
             if (filters.completed !== undefined) {
